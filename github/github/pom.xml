@@ -1,0 +1,81 @@
+<!-- Project declaration: defines the project's metadata and dependencies -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- Model version: specifies the version of the POM file -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Group ID: a unique identifier for the project's organization -->
+    <groupId>com.example</groupId>
+    <!-- Artifact ID: a unique identifier for the project's artifact (e.g., JAR file) -->
+    <artifactId>ebook</artifactId>
+    <!-- Version: the project's version number -->
+    <version>1.0</version>
+    <!-- Packaging: specifies the type of packaging for the project's artifact (e.g., JAR, WAR, EAR) -->
+    <packaging>jar</packaging>
+
+    <!-- Project name: a human-readable name for the project -->
+    <name>ebook</name>
+    <!-- Project description: a brief description of the project -->
+    <description>ebook project</description>
+
+    <!-- Parent project: specifies the parent project's POM file, which provides default settings and dependencies -->
+    <parent>
+        <!-- Parent group ID: the parent project's organization -->
+        <groupId>org.springframework.boot</groupId>
+        <!-- Parent artifact ID: the parent project's artifact (e.g., Spring Boot Starter Parent) -->
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- Parent version: the parent project's version number -->
+        <version>2.7.3</version>
+        <!-- Relative path: specifies the relative path to the parent project's POM file (optional) -->
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <!-- Project properties: defines custom properties for the project -->
+    <properties>
+        <!-- Source encoding: specifies the character encoding for the project's source files -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Reporting output encoding: specifies the character encoding for the project's reporting output -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Java version: specifies the Java version for the project -->
+        <java.version>11</java.version>
+    </properties>
+
+    <!-- Dependencies: specifies the project's dependencies, including libraries and frameworks -->
+    <dependencies>
+        <!-- Spring Boot Starter Data JPA: provides dependencies for Spring Data JPA and Hibernate -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <!-- Spring Boot Starter Web: provides dependencies for Spring Web and Tomcat -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- MySQL Connector/J: provides a JDBC driver for MySQL -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!-- Spring Boot Starter Tomcat: provides dependencies for Tomcat (optional) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <!-- Scope: specifies the dependency's scope (e.g., compile, runtime, test) -->
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- Build: specifies the project's build settings and plugins -->
+    <build>
+        <!-- Plugins: specifies the build plugins for the project -->
+        <plugins>
+            <!-- Spring Boot Maven Plugin: provides support for building and deploying Spring Boot applications -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
