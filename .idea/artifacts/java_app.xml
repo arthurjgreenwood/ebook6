@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="war" name="java-app">
-    <output-path>$PROJECT_DIR$/target</output-path>
+  <artifact type="war" build-on-make="true" name="java-app">
+    <output-path>$PROJECT_DIR$/</output-path>
     <root id="archive" name="java-app.war">
       <element id="module-output" name="ebook6" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.6.10.Final/hibernate-core-5.6.10.Final.jar" path-in-jar="/" />
