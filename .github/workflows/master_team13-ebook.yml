@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'Team13-Ebook'
           slot-name: 'Production'
-          package: '${{ github.workspace }}/target/*.war'
+          package: 'java-app/*.war'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_26685117B3C443B397ACD5DF926D042D }}
