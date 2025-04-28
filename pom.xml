@@ -12,7 +12,7 @@
     <!-- Version: the project's version number -->
     <version>1.0</version>
     <!-- Packaging: specifies the type of packaging for the project's artifact (e.g., JAR, WAR, EAR) -->
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <!-- Project name: a human-readable name for the project -->
     <name>ebook</name>
