@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="war" build-on-make="true" name="java-app">
+  <artifact type="war" name="java-app">
     <output-path>$PROJECT_DIR$/target</output-path>
     <root id="archive" name="java-app.war">
       <element id="module-output" name="ebook6" />
