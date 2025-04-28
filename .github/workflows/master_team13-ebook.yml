@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: 'target/*.war'
+          path: 'target/java-app.war'
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'Team13-Ebook'
           slot-name: 'Production'
-          package: 'target/*.war'
+          package: 'target/java-app.war'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A948D64619914EB19CD19401A4FBC18B }}
