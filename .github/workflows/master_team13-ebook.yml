@@ -39,7 +39,11 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+        
+        # Debugging step to list files in the workspace
+             - name: List files in workspace
+             run: ls -la
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
