@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="war" build-on-make="true" name="java-app">
-    <output-path>$PROJECT_DIR$/out/artifacts/java_app</output-path>
-    <root id="archive" name="java-app.war" />
+  <artifact type="jar" build-on-make="true" name="java-app">
+    <output-path>$PROJECT_DIR$</output-path>
+    <root id="archive" name="java-app.jar" />
   </artifact>
 </component>
