@@ -1,0 +1,28 @@
+Added an application.properties file to connect to my local MySQL server
+Moved EbookApplication outside of its own package, the application scans its current package and all sub-packages so it could not find anything
+
+
+When you use the Repository interface methods FindByID(UUID userID) the Repo will look for a field named Id in user which does not exist
+    It must therefore be refactored to FindByUserId instead, I've tried to account for all instances of this problem
+
+    This problem is prevalent throughout all the classes as well such as eBookIds and the like
+    Also, there is a case-sensitivity issue, some are EbookId and some are EbookID which are not compatible
+    eBook Ebook and EBook are causing similar issue (I am going clinically insane)
+
+There are 2 POST maps in the User controller with no specified URL path so conflicts arise
+    I've changed the PostMapping endpoint for loginUser method to /login for now so the code compiles but this may need to be changed
+
+Note: From now on, all eBooks must be referred to as either ebook or Ebook to prevent case sensitivity issues
+
+The ReviewRepository has a method to find a review by user, but no user Field exists in the Review class
+    I have added this field and added the parameter to all instantiations of review
+    The same problem existed for title which has also been fixed
+
+FindAllLoans() method in LoanRepository is looking for a field name AllLoans which does not exist.
+    The JPA repository already provides findAll() as standard so I've removed this method
+
+
+The final issue was that LoanId does not exist in review, so finding by LoanId will not work
+    changing this to findByLoan_LoanId seemed to have fixed it
+
+IT COMPILES NOW HOORAH
