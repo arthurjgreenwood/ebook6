@@ -12,7 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication(scanBasePackages = {"ebook6.user", "ebook6.SpringBoot"})
+@SpringBootApplication(scanBasePackages = {"ebook6"})
 @EnableScheduling
 public class EbookApplication {
     public static void main(String[] args) {
