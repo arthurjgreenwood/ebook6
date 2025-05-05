@@ -38,9 +38,10 @@ public class PaymentController {
             Payment createdPayment = paymentService.createPayment(payment);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdPayment);
         }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment failed.");
+        catch (HorsePayFailedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("HorsePay failed to make the payment. Please try again.");
         }
+
     }
 
     /**

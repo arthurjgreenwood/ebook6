@@ -15,7 +15,9 @@ import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -32,21 +34,25 @@ public class Payment {
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(nullable = false)
-    private LocalDateTime paymentDate;
+    private LocalDate paymentDate;
+    @Column(nullable = false)
+    private LocalTime paymentTime;
 
     /**
      * Constructors for creating payments. Includes a no parameter constructor for the JPA and normal parameterised constructor.
      */
     public Payment() {
         this.paymentId = UUID.randomUUID();
-        this.paymentDate = LocalDateTime.now();
+        this.paymentDate = LocalDate.now();
+        this.paymentTime = LocalTime.now();
     }
 
     public Payment(User user, double amount) {
         this.paymentId = UUID.randomUUID();
         this.user = user;
         this.amount = amount;
-        this.paymentDate = LocalDateTime.now();
+        this.paymentDate = LocalDate.now();
+        this.paymentTime = LocalTime.now();
     }
 
     // getters and setters
@@ -56,5 +62,7 @@ public class Payment {
 
     public double getAmount() { return amount; }
 
-    public LocalDateTime getPaymentDate() { return paymentDate; }
+    public LocalDate getPaymentDate() { return paymentDate; }
+
+    public LocalTime getPaymentTime() { return paymentTime; }
 }

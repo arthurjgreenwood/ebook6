@@ -8,11 +8,11 @@
 package ebook6.features.payment;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PaymentService {
@@ -34,8 +34,55 @@ public class PaymentService {
      * @return the created payment
      */
     public Payment createPayment(Payment payment) {
-        return paymentRepository.save(payment);
+        if (checkHorsePayPayment(payment)) {
+            return paymentRepository.save(payment);
+        }
+        else {
+            throw new HorsePayFailedException("HorsePay API failed. Please try again");
+        }
+
     }
+
+    
+
+    private boolean checkHorsePayPayment(Payment payment) {
+        String horsePayURL = "http://homepages.cs.ncl.ac.uk/daniel.nesbitt/CSC8019/HorsePay/HorsePay.php";
+
+        Map<String, Object> payments = createMap(payment);
+
+        try {
+            ResponseEntity<Map> response = new RestTemplate().postForEntity(horsePayURL, payments, Map.class);
+            Map body = response.getBody();
+            if (body == null) {
+                throw new HorsePayFailedException("HorsePay API failed and returned null. Please try again");
+            }
+            if (body.containsKey("paymentSuccess")) {
+                Map paymentSuccess = (Map) body.get("paymetSuccess");
+                Object status = paymentSuccess.get("Status");
+                if (status instanceof Boolean) {
+                    return (Boolean) status;
+                }
+            }
+        }
+        catch (HorsePayFailedException e) {
+            System.out.println("HorsePay API error. Please try again");
+        }
+        return false;
+    }
+
+    private Map<String, Object> createMap(Payment payment) {
+        Map<String, Object> payments = new HashMap<>();
+        payments.put("storeID", "Team13");
+        payments.put("customerID", payment.getUser().getId().toString());
+        payments.put("date", payment.getPaymentDate().toString());
+        payments.put("time",  payment.getPaymentTime().toString());
+        payments.put("timeZone", "BST");
+        payments.put("transactionAmount", payment.getAmount());
+        payments.put("currencyCode", "GBP");
+        payments.put("forcePaymentSatusReturnType", true);
+        return payments;
+    }
+    
 
     /**
      * Finds all payments in our database.

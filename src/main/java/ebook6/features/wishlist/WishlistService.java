@@ -77,5 +77,4 @@ public class WishlistService {
         return wishlistRepository.findByUser(userSearching);
     }
 
-
 }

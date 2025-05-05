@@ -7,7 +7,7 @@ package ebook6.user;
 
 public class InvalidAccessException extends RuntimeException {
 
-    public InvalidAccessException(String message) {
-        super(message);
+    public InvalidAccessException(String errorMessage) {
+        super(errorMessage);
     }
 }
