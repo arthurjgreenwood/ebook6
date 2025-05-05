@@ -30,6 +30,7 @@ public class PaymentService {
 
     /**
      * Creates a payment and saves it to our database
+     * If horsePay validates the payment, the payment is saved. Error is thrown if not.
      * @param payment to be created
      * @return the created payment
      */
@@ -43,8 +44,12 @@ public class PaymentService {
 
     }
 
-    
-
+    /**
+     * Method for checking if a payment is successful, by sending the payment to Dan's HorsePay API.
+     * The payment details are stored in a HashMap and posted to the HorsePay API endpoint.
+     * @param payment to check
+     * @return true if the payment is sucessful, false otherwise.
+     */
     private boolean checkHorsePayPayment(Payment payment) {
         String horsePayURL = "http://homepages.cs.ncl.ac.uk/daniel.nesbitt/CSC8019/HorsePay/HorsePay.php";
 
@@ -70,6 +75,13 @@ public class PaymentService {
         return false;
     }
 
+    /**
+     * Creates a Map for storing payment details to send to the HorsePay API, including the fields mentioned in the HorsePay
+     * documentation.
+     * The label for each data will be the key in the map, and the corresponding value will be the value in the map.
+     * @param payment , including the relevant information to send
+     * @return a map to be sent with the payment details.
+     */
     private Map<String, Object> createMap(Payment payment) {
         Map<String, Object> payments = new HashMap<>();
         payments.put("storeID", "Team13");
