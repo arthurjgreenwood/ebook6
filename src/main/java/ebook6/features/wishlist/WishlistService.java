@@ -1,3 +1,10 @@
+/**
+ * Service Class for wishlist-related operations.
+ *
+ * @authors Thomas Hague
+ * Created by Thomas Hague, 5/5/2025 with package, annotations, WishlistService, addToWishlist, removeFromWishList and getUsersWishList methods.
+ */
+
 package ebook6.features.wishlist;
 
 import ebook6.ebook.EBook;
@@ -25,6 +32,13 @@ public class WishlistService {
         this.ebookRepository = ebookRepository;
     }
 
+    /**
+     * Adds an eBook to user's wishlist if it's not already present.
+     * Throws an exception if either the user or eBook can't be found, or is already in their wishlist
+     * @param userId of the user adding
+     * @param ebookId of the ebook to be added
+     * @return the created wishlist object
+     */
     public Wishlist addToWishlist(UUID userId, UUID ebookId) {
         Optional<User> optionalUser = userRepository.findByUserId(userId);
         Optional<EBook> optionalEbook = ebookRepository.findByEbookId(ebookId);
@@ -51,6 +65,12 @@ public class WishlistService {
         return wishlistRepository.save(wishlistEntry);
     }
 
+    /**
+     * Removes an eBook from a user's wishlist
+     * Thrwos an exception if the user or ebook is not found.
+     * @param userId of the user
+     * @param ebookId of the eBook
+     */
     public void removeFromWishlist(UUID userId, UUID ebookId) {
         Optional<User> optionalUser = userRepository.findByUserId(userId);
         Optional<EBook> optionalEbook = ebookRepository.findByEbookId(ebookId);
@@ -67,6 +87,12 @@ public class WishlistService {
         System.out.println(userRemoving + " has removed " + ebookToRemove + " from their wishlist.");
     }
 
+    /**
+     * Returns a list of all eBooks in a user's wishlist.
+     * Return an empty list if no eBooks are present.
+     * @param userId of the user to search for
+     * @return a list of wishlist objects
+     */
     public List<Wishlist> getUsersWishlist(UUID userId) {
         Optional<User> optionalUser = userRepository.findByUserId(userId);
 

@@ -1,3 +1,10 @@
+/**
+ * Repository interface for withlist database operations.
+ * @authors Thomas Hague
+ * Created by Thomas Hague, 5/5/2025 with package, annotations and findUser, existsByUserAndEbook and deleteByUserAndEbook
+ * and findByUser methods.
+ */
+
 package ebook6.features.wishlist;
 
 import ebook6.ebook.EBook;
