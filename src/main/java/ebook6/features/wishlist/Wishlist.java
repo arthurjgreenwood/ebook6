@@ -4,7 +4,7 @@
  * Created by Thomas Hague, 31/3/2025 package, annotations, fields, constructors, getters and setters..
  */
 
-package ebook6.features;
+package ebook6.features.wishlist;
 
 import ebook6.ebook.EBook;
 import ebook6.user.User;
@@ -48,7 +48,14 @@ public class Wishlist {
 
     public User getUserId() { return user; }
 
+    public void setUser(User user) { this.user = user; }
+
     public EBook getEbookId() { return ebook; }
 
+    public void setEbook(EBook ebook) {
+        this.ebook = ebook;
+    }
+
     public LocalDateTime getAddedAt() { return addedAt; }
+
 }
