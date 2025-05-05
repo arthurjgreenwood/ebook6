@@ -2,9 +2,10 @@
  * Repository interface for review database operations.
  * We're using Optional to handle the case where no review is found with the given title.
  * We're using List in cases where multiple reviews may be returned.
- * @authors Thomas Hague
+ * @authors Thomas Hague and Arthur Greenwood
  * Created by Thomas Hague, 1/4/2025 with package, annotations and findById, findByLoan_LoanId, findByLoan, findByTitleContainingIgnoreCase
  * and findByUser methods.
+ * Modified by Arthur Greenwood 05/5/2025. Commented out findByUser method as this is tied to the Loan object
  */
 package ebook6.features.review;
 
@@ -48,12 +49,12 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
      */
     List<Review> findByTitleContainingIgnoreCase(String title);
 
-    /**
-     * Finds reviews of all ebooks by a given user
-     * @param user of the reviews to search for
-     * return a List containing any reviews of the book by the user or an empty List if not found
-     */
-    List<Review> findByUser(User user);
+//    /**
+//     * Finds reviews of all ebooks by a given user
+//     * @param user of the reviews to search for
+//     * return a List containing any reviews of the book by the user or an empty List if not found
+//     */
+//    List<Review> findByUser(User user);
 
 
 }

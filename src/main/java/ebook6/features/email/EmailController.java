@@ -1,7 +1,8 @@
 /**
  * Controller Class for email-related REST API endpoints.
- * @authors Thomas Hague
+ * @authors Thomas Hague and Arthur Greenwood
  * Created by Thomas Hague, 1/4/2025 with EmailController and create confirmation, cancellation and reminder methods.
+ * Modified by Arthur Greenwood 05/5/2025. Created separate post endpoints for the emails
  */
 
 package ebook6.features.email;
@@ -35,7 +36,7 @@ public class EmailController {
      * @param loan to create the email for
      * @return a ResponseEntity with the created loan or an error message
      */
-    @PostMapping
+    @PostMapping("/confirmation")
     public ResponseEntity<?> createConfirmationEmail(@RequestBody Loan loan) {
         try {
             Email confirmationEmail = emailService.createConfirmationEmail(loan);
@@ -51,7 +52,7 @@ public class EmailController {
      * @param loan to create the email for
      * @return a ResponseEntity with the created loan or an error message
      */
-    @PostMapping
+    @PostMapping("/cancellation")
     public ResponseEntity<?> createCancellationEmail(@RequestBody Loan loan) {
         try {
             Email cancellationEmail = emailService.createCancellationEmail(loan);
@@ -67,7 +68,7 @@ public class EmailController {
      * @param loan to create the email for
      * @return a ResponseEntity with the created loan or an error message
      */
-    @PostMapping
+    @PostMapping("/reminder")
     public ResponseEntity<?> createReminderEmail(@RequestBody Loan loan) {
         try {
             Email reminderEmail = emailService.createReminderEmail(loan);

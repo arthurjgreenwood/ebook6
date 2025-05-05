@@ -38,10 +38,10 @@ public class ReviewController {
 
 
     @PostMapping
-    public ResponseEntity<?> createReview(@RequestBody Loan loan, @RequestParam String reviewText, @RequestParam int rating, @RequestParam User user,
+    public ResponseEntity<?> createReview(@RequestBody Loan loan, @RequestParam String reviewText, @RequestParam int rating,
                                           @RequestParam String title) {
         try {
-            Review createdReview = reviewService.createReview(loan, reviewText, rating, user, title);
+            Review createdReview = reviewService.createReview(loan, reviewText, rating, title);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdReview);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());

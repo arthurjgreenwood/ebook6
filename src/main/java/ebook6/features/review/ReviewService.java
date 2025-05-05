@@ -1,10 +1,11 @@
 /**
  * Service Class for review-related operations.
  *
- * @authors Thomas Hague
+ * @authors Thomas Hague and Arthur Greenwood
  * Created by Thomas Hague, 1/4/2025 with package, annotations, ReviewService, createReview, reviewValidation methods.
  * Modified by Thomas Hague 4/4/2025 with findReviewsByUser, findReviewsByTitle, findReviewsById, findReviewsByLoan,
  * findReviewsByLoanId, updateReview and deleteReview methods.
+ * Modified by Arthur Greenwood 05/5/2025. Commented out findByUser method as this is tied to the Loan object
  */
 
 package ebook6.features.review;
@@ -41,7 +42,7 @@ public class ReviewService {
      * @return a ResponseEntity with the created review or an error message
      */
     @Transactional
-    public Review createReview(Loan loan, String reviewText, int rating, User user, String title) {
+    public Review createReview(Loan loan, String reviewText, int rating, String title) {
         if (reviewRepository.findByLoan(loan).isPresent()) {
             throw new IllegalStateException("Review already exists");
         }
@@ -49,7 +50,7 @@ public class ReviewService {
             throw new UserNotLoggedInException("User needs to be logged in to leave a review.");
         }
         reviewValidation(reviewText, rating);
-        Review review = new Review(loan, reviewText, rating, user, title);
+        Review review = new Review(loan, reviewText, rating, title);
         return reviewRepository.save(review);
     }
 
@@ -69,14 +70,14 @@ public class ReviewService {
         }
     }
 
-    /**
-     * Finds reviews by a given user from our database.
-     * @param user
-     * @return a List containing the target review(s) or empty.
-     */
-    public List<Review> findReviewsByUser(User user) {
-        return reviewRepository.findByUser(user);
-    }
+//    /**
+//     * Finds reviews by a given user from our database.
+//     * @param user
+//     * @return a List containing the target review(s) or empty.
+//     */
+//    public List<Review> findReviewsByUser(User user) {
+//        return reviewRepository.findByUser(user);
+//    }
 
     /**
      * Finds reviews by a given title from our database.

@@ -1,7 +1,8 @@
 /**
  * Class representing a Payment.
- * @author Thomas Hague
+ * @authors Thomas Hague and Arthur Greenwood
  * Created by Thomas Hague, 31/3/2025 with package, annotations, fields, constructors, getters and setters.
+ * Modified by Arthur Greenwood 05/5/2025. Made paymentDate nullable
  */
 
 package ebook6.features.payment;
@@ -33,9 +34,9 @@ public class Payment {
     private double amount;
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @Column(nullable = false)
+    @Column //This needs to be nullable because hibernate is automatically populating the dates as 0000-00-00
     private LocalDate paymentDate;
-    @Column(nullable = false)
+    @Column
     private LocalTime paymentTime;
 
     /**

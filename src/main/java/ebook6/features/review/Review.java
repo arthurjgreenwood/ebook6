@@ -35,9 +35,6 @@ public class Review {
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateSent;
-    @ManyToOne
-    @JoinColumn(name = "Reviewer", nullable = false)
-    private User user;
     @Column(nullable = false)
     private String title;
 
@@ -45,13 +42,12 @@ public class Review {
     /**
      * Constructors for creating reviews. Includes a no parameter constructor for the JPA and normal parameterised constructor.
      */
-    public Review(Loan loan, String reviewText, int rating, User user, String title) {
+    public Review(Loan loan, String reviewText, int rating, String title) {
         this.reviewId = UUID.randomUUID();
         this.loan = loan;
         this.reviewText = reviewText;
         this.rating = rating;
         this.dateSent = LocalDateTime.now();
-        this.user = user;
         this.title = title;
     }
 
