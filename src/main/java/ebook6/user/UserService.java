@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -85,7 +84,7 @@ public class UserService {
     public User createUser(String email, String password) throws RuntimeException {
         User user = new User(email, password);
         // Check if email already exists
-        if (userRepository.findByEmailIgnoreCase(user.getEmail()).isPresent()) {
+        if (userRepository.findByEmailIgnoreCase(email).isPresent()) {
             throw new UserAlreadyInDatabaseException("User with email: " + user.getEmail() + " already exists");
         }
         // Validate password
@@ -94,7 +93,6 @@ public class UserService {
                     "and be a minimum of 8 characters");
         }
         System.out.println("User: " + user + " has been added to our website");
-        user.setUserId(UUID.randomUUID()); //The value isn't randomly generating at construction for some reason
         return userRepository.save(user);
         
     }
@@ -160,7 +158,7 @@ public class UserService {
         if (!userRepository.findByEmailIgnoreCase(newAdminUser.getEmail()).isPresent()) {
             throw new EntityNotFoundException("User with email: " + newAdminUser.getEmail() + " doesn't exist in our website");
         }
-        if (currentAdminUser.getAdmin()) {
+        if (!currentAdminUser.getAdmin()) {
             throw new InvalidAccessException("You don't have permission to make admin changes");
         }
         newAdminUser.setAdmin(true);
@@ -173,13 +171,14 @@ public class UserService {
      * @param email user's email
      * @param password user's password
      */
-    public void loginUser(String email, String password) {
+    public Optional<User> loginUser(String email, String password) {
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (user.getPassword().equals(password)) {
-                user.setLoggedIn(true);
-                userRepository.save(user);
+//                user.setLoggedIn(true);
+//                userRepository.save(user);
+                return Optional.of(user);
             }
             else {
                 throw new IllegalArgumentException("Incorrect password, please try again.");

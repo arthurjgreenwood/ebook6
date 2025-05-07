@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/ebooks")
+@RequestMapping("/api")
 public class EBookController {
     
     private final EBookService ebookService;
@@ -175,12 +175,12 @@ public class EBookController {
     }
     
     /**
-     * Gets the top 5 recommended books for a user.
+     * Gets the top 4 recommended books for a user.
      *
      * @param userId The ID of the user.
      * @return An ApiResponse containing the list of recommended books.
      */
-    @GetMapping("/recommend")
+    @GetMapping("/books")
     public ApiResponse<List<EBook>> getRecommendations(@RequestParam("userId") Long userId) {
         List<EBook> ebooks = ebookService.getRecommendedEbooks(userId);
         if (!ebooks.isEmpty()) {

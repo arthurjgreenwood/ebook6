@@ -164,8 +164,8 @@ public class EBookService {
     }
     
     /**
-     * Gets the top 5 recommended books for a user.
-     * For now just top 5 books sorted ascending. Future implementation to get recommended books through historical loans
+     * Gets the top 4 recommended books for a user.
+     * For now just top 4 books sorted ascending. Future implementation to get recommended books through historical loans
      * @param userId The ID of the user.
      * @return A list of recommended ebooks.
      
@@ -174,6 +174,6 @@ public class EBookService {
         // Get the first 5 ebooks sorted ascending by title
         List<EBook> ebooks = eBookRepository.findAll();
         ebooks.sort(Comparator.comparing(EBook::getTitle));
-        return ebooks.subList(0, Math.min(5, ebooks.size()));
+        return ebooks.subList(0, Math.min(4, ebooks.size()));
     }
 }

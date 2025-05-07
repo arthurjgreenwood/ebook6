@@ -89,7 +89,7 @@ public class PaymentService {
     private Map<String, Object> createMap(Payment payment) {
         Map<String, Object> payments = new HashMap<>();
         payments.put("storeID", "Team13");
-        payments.put("customerID", payment.getUser().getId().toString());
+        payments.put("customerID", payment.getUser().getUserId().toString());
         payments.put("date", payment.getPaymentDate().toString());
         payments.put("time",  payment.getPaymentTime().toString());
         payments.put("timeZone", "BST");

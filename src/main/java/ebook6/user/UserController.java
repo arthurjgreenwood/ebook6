@@ -23,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @RestController
@@ -34,14 +31,16 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-
+    private final UserRepository userRepository;
+    
     /**
      * Creates an UserController using our ebookService
      * @param userService
      */
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -230,11 +229,17 @@ public class UserController {
      */
     @PostMapping("/login")
     @Transactional
-    public ApiResponse<?> loginUser(@RequestBody Map<String, String> payload) {
+    public Object loginUser(@RequestBody Map<String, String> payload) {
         try {
-            userService.loginUser(payload.get("email"), payload.get("password"));
-            return ApiResponse.success(userService.findUserByEmail(payload.get("email")));
-         }
+            
+            return userService.loginUser(payload.get("email"), payload.get("password"))
+                    .map(user -> Map.of(
+                            "message", "Login successful",
+                            "userId", user.getUserId()
+                    ))
+                    .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+            
+         } //userService.findUserByEmail(payload.get("email"))
         catch (EntityNotFoundException e) {
             return ApiResponse.error(404, "User not found");
         }

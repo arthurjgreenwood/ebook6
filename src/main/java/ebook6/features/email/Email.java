@@ -13,6 +13,8 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+//TODO probably remove this controller and put email functionality elsewhere
+
 @Entity
 @Table(name = "Email")
 public class Email {

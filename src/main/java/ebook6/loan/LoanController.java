@@ -47,14 +47,14 @@ public class LoanController {
     public ApiResponse<?> createLoan(@RequestParam UUID userId, @RequestParam UUID ebookId) {
         try {
             Loan createdLoan = loanService.createLoan(userId, ebookId);
-            return ApiResponse.success("Loan created sucessfully.");
+            return ApiResponse.success(createdLoan);
         } catch (EntityNotFoundException e) {
-            return ApiResponse.error(404,"Loan not found." ); notify()
+            return ApiResponse.error(404,"Loan not found." );
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ApiResponse.error(405, "Bad Request.");
         }
         catch (UserNotLoggedInException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ApiResponse.fail("User not logged in.");
         }
     }
 

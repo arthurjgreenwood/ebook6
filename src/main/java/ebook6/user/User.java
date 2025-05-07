@@ -10,6 +10,8 @@
 
 package ebook6.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class User {
 
     @Id
+    @JsonProperty("id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID userId;
     @Column(nullable = false)
@@ -66,11 +69,11 @@ public class User {
     }
 
     // Getters and setters
-    public UUID getId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setId(UUID userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
@@ -155,12 +158,9 @@ public class User {
         int hc = 19;
         return 31 * hc + getEmail().hashCode();
     }
+    
 
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
+    public void setId(UUID userId) {
         this.userId = userId;
     }
 }

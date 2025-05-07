@@ -8,7 +8,10 @@
 
 package ebook6.features.review;
 
+import ebook6.ApiResponse;
 import ebook6.loan.Loan;
+import ebook6.loan.LoanService;
+import ebook6.user.RegisterRequest;
 import ebook6.user.User;
 import ebook6.user.UserNotLoggedInException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +20,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+//TODO refactor review structures to have a user and an ebook associated with it. This can be pulled from the loan object
 
 @RestController
 @RequestMapping("/api/review")
@@ -37,20 +42,19 @@ public class ReviewController {
     }
 
 
-    @PostMapping("add")
-    public ResponseEntity<?> createReview(@RequestBody Loan loan, @RequestParam String reviewText, @RequestParam int rating,
-                                          @RequestParam String title) {
+    @PostMapping("/add")
+    public ApiResponse<?> createReview(@RequestBody ReviewRequest req) {
         try {
-            Review createdReview = reviewService.createReview(loan, reviewText, rating, title);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdReview);
+            //reviewService.createReview(getloan, reviewText, rating, title);
+            return ApiResponse.success("Review created");
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ApiResponse.fail("Review already exists");
         }
         catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ApiResponse.error(404, e.getMessage());
         }
         catch (UserNotLoggedInException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ApiResponse.fail("User not logged in");
         }
     }
 
@@ -91,5 +95,10 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    
+//    @GetMapping("/list")
+//    public ResponseEntity<?> listReviews(@RequestParam UUID ebookId) {
+//        //Requires extraction of eBook UUIDs from historical loans
+//    }
     
 }
