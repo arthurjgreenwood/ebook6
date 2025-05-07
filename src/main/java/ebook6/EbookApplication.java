@@ -16,8 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.persistence.Entity;
 
-@SpringBootApplication(scanBasePackages = {"ebook6"})
-@EntityScan (basePackages = {"ebook6.features"})
+@SpringBootApplication(scanBasePackages = "ebook6")
 @EnableScheduling
 public class EbookApplication {
     public static void main(String[] args) {

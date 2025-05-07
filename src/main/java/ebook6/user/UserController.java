@@ -16,6 +16,7 @@
 package ebook6.user;
 
 import ebook6.ApiResponse;
+import org.hibernate.id.insert.IdentifierGeneratingInsert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
