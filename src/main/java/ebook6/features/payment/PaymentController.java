@@ -2,10 +2,14 @@
  * Controller Class for payment-related REST API endpoints.
  * @authors Thomas Hague
  * Created by Thomas Hague, 2/4/2025 with paymentController, create payment and getAllPayment methods.
+ * Modified by Thomas Hague 6/5/2025.
+ * Modified by Thomas Hague 6/5/2025. createPayment and getAllPayments method edited.
  */
 
 package ebook6.features.payment;
 
+import ebook6.ApiResponse;
+import ebook6.user.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,32 +33,36 @@ public class PaymentController {
 
     /**
      * Creates a new payment by calling the createPayment method in the PaymentService class.
-     * @param payment to create
+     * @param user making the payment
+     * @param amount amount of the payment
      * @return a ResponseEntity with the created payment or an error message
      */
     @PostMapping
-    public ResponseEntity<?> createPayment(Payment payment) {
+    public ApiResponse<?> createPayment(@RequestBody User user, double amount) {
         try {
-            Payment createdPayment = paymentService.createPayment(payment);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdPayment);
+            Payment createdPayment = paymentService.createPayment(user, amount);
+            return ApiResponse.success(createdPayment);
         }
         catch (HorsePayFailedException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("HorsePay failed to make the payment. Please try again.");
+            return ApiResponse.fail(e.getMessage());
         }
 
     }
 
     /**
      * Identifies all payments in our database. Error message printed if none
-     * @return a ResponseEntity with all users or error message.
+     * @return a APIResponse with all payments or error message.
      */
     @GetMapping
-    public ResponseEntity<?> getAllPayments() {
+    public ApiResponse<List<Payment>> getAllPayments() {
         try {
         List<Payment> allPayments = paymentService.findAllPayments();
-        return ResponseEntity.status(HttpStatus.OK).body(allPayments); }
+        if (!allPayments.isEmpty()) {
+            return ApiResponse.success(allPayments);
+        }
+        return ApiResponse.success(allPayments); }
         catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment's not found.");
+            return ApiResponse.error(404, "Payment(s) not found");
         }
     }
 

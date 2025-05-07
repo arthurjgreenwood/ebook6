@@ -2,7 +2,8 @@
  * Controller Class for email-related REST API endpoints.
  * @authors Thomas Hague and Arthur Greenwood
  * Created by Thomas Hague, 1/4/2025 with EmailController and create confirmation, cancellation and reminder methods.
- * Modified by Arthur Greenwood 05/5/2025. Created separate post endpoints for the emails
+ * Modified by Arthur Greenwood 05/5/2025. Created separate post endpoints for the emails.
+ * Modified by Thomas Hague 6/5/2025. createConfirmationEmail, createCancellationEmail and createReminderEmail edited.
  */
 
 package ebook6.features.email;

@@ -3,10 +3,12 @@
  *
  * @authors Thomas Hague
  * Created by Thomas Hague, 2/4/2025 with package, annotations, PaymentService, create payment and findAllPayments methods.
+ * Modified by Thomas Hague 6/5/2025. createPayment method edited.
  */
 
 package ebook6.features.payment;
 
+import ebook6.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,10 +32,13 @@ public class PaymentService {
 
     /**
      * Creates a payment and saves it to our database
-     * @param payment to be created
+     * If horsePay validates the payment, the payment is saved. Error is thrown if not.
+     * @param user making the payment
+     * @param amount amount of the payment
      * @return the created payment
      */
-    public Payment createPayment(Payment payment) {
+    public Payment createPayment(User user, double amount) {
+        Payment payment = new Payment(user, amount);
         if (checkHorsePayPayment(payment)) {
             return paymentRepository.save(payment);
         }
@@ -42,9 +47,13 @@ public class PaymentService {
         }
 
     }
-
     
-
+    /**
+     * Method for checking if a payment is successful, by sending the payment to Dan's HorsePay API.
+     * The payment details are stored in a HashMap and posted to the HorsePay API endpoint.
+     * @param payment to check
+     * @return true if the payment is sucessful, false otherwise.
+     */
     private boolean checkHorsePayPayment(Payment payment) {
         String horsePayURL = "http://homepages.cs.ncl.ac.uk/daniel.nesbitt/CSC8019/HorsePay/HorsePay.php";
 
@@ -69,7 +78,14 @@ public class PaymentService {
         }
         return false;
     }
-
+    
+    /**
+     * Creates a Map for storing payment details to send to the HorsePay API, including the fields mentioned in the HorsePay
+     * documentation.
+     * The label for each data will be the key in the map, and the corresponding value will be the value in the map.
+     * @param payment , including the relevant information to send
+     * @return a map to be sent with the payment details.
+     */
     private Map<String, Object> createMap(Payment payment) {
         Map<String, Object> payments = new HashMap<>();
         payments.put("storeID", "Team13");

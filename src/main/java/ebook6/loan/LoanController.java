@@ -7,6 +7,7 @@
 
 package ebook6.loan;
 
+import ebook6.ApiResponse;
 import ebook6.user.User;
 import ebook6.user.UserNotLoggedInException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,12 @@ public class LoanController {
      */
     @PostMapping
     @Transactional
-    public ResponseEntity<?> createLoan(@RequestParam UUID userId, @RequestParam UUID ebookId) {
+    public ApiResponse<?> createLoan(@RequestParam UUID userId, @RequestParam UUID ebookId) {
         try {
             Loan createdLoan = loanService.createLoan(userId, ebookId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdLoan);
+            return ApiResponse.success("Loan created sucessfully.");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ApiResponse.error(404,"Loan not found." ); notify()
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

@@ -22,7 +22,7 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("/api/review")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -37,7 +37,7 @@ public class ReviewController {
     }
 
 
-    @PostMapping
+    @PostMapping("add")
     public ResponseEntity<?> createReview(@RequestBody Loan loan, @RequestParam String reviewText, @RequestParam int rating,
                                           @RequestParam String title) {
         try {
@@ -91,4 +91,5 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    
 }

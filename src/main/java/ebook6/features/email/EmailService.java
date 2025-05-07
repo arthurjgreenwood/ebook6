@@ -3,6 +3,7 @@
  *
  * @authors Thomas Hague
  * Created by Thomas Hague, 1/4/2025 with package, annotations, Emailservice, create confirmation, cancellation and reminder email methods.
+ * Modified by Thomas Hague 6/5/2025. createEmail method edited.
  */
 package ebook6.features.email;
 
@@ -28,10 +29,13 @@ public class EmailService {
 
     /**
      * Creates an email and saves it to our database
-     * @param email to be created
+     * @param loan
+     * @param subject
+     * @body
      * @return the created Email
      */
-    public Email createEmail(Email email) {
+    public Email createEmail(Loan loan, String subject, String body) {
+        Email email = new Email(loan, subject, body);
         return emailRepository.save(email);
     }
 
@@ -44,7 +48,7 @@ public class EmailService {
         String subject = "Confirmation of your eBook loan";
         String body = "Hi " + loan.getUser().getName() + ", " + '\n' + "You have successfully loaned " + loan.getEbook().getTitle()
                 + " for " + loan.getEbook().getMaxLoanDuration() + " days. We hope you enjoy the book!" + '\n' + "Kind regards," +'\n' + "The eBookStore.";
-        Email confirmationEmail = new Email(loan, subject, body);
+        Email confirmationEmail = createEmail(loan, subject, body);
         return emailRepository.save(confirmationEmail);
     }
 
@@ -57,7 +61,7 @@ public class EmailService {
         String subject = "Cancellation of your eBook loan";
         String body = "Hi " + loan.getUser().getName() + ", " + '\n' + "You have successfully cancelled your loan of " + loan.getEbook().getTitle()
                 + " with immediate effect. We hope you enjoyed the book!" + '\n' + "Kind regards," +'\n' + "The eBookStore.";
-        Email cancellationEmail = new Email(loan, subject, body);
+        Email cancellationEmail = createEmail(loan, subject, body);
         return emailRepository.save(cancellationEmail);
     }
 
@@ -70,7 +74,7 @@ public class EmailService {
         String subject = "Reminder of your eBook loan coming to an end soon";
         String body = "Hi " + loan.getUser().getName() + ", " + '\n' + "This is a reminder that your loan of " + loan.getEbook().getTitle()
                 + " is due to end in 24 hours. Hope you have enjoyed reading it!" + '\n' + "Kind regards," +'\n' + "The eBookStore.";
-        Email reminderEmail = new Email(loan, subject, body);
+        Email reminderEmail = createEmail(loan, subject, body);
         return emailRepository.save(reminderEmail);
     }
 

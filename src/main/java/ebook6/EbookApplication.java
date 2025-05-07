@@ -11,9 +11,13 @@ package ebook6;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.persistence.Entity;
+
 @SpringBootApplication(scanBasePackages = {"ebook6"})
+@EntityScan (basePackages = {"ebook6.features"})
 @EnableScheduling
 public class EbookApplication {
     public static void main(String[] args) {

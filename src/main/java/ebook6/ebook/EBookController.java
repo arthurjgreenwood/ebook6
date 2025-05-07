@@ -1,9 +1,12 @@
 /**
  * Controller Class for eBook-related REST API endpoints.
+ *
  * @authors Thomas Hague
  * Created by Thomas Hague, 31/3/2025 with Package, comments and EbookController and createEbook methods
  * Modified by Thomas Hague 2/4/2025. Added updateEBook, deleteEBookById, getEBooksByTitle, getEbooksByAuthor, getEbooksByCategory,
  * getEbooksByPriceInBetween methods.
+ * Modified by Thomas Hague, 6/5/2025. createEbook method edited.
+ * Modified by Thomas Hague, 6/5/2025. deleteEbook, updateEbook, getEbooksByCategory, getEBooksByPriceInbetween methods edited.
  */
 
 package ebook6.ebook;
@@ -23,9 +26,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/ebooks")
 public class EBookController {
-
+    
     private final EBookService ebookService;
-
+    
     /**
      * Creates an EBookController using our ebookService
      * @param ebookService
@@ -34,7 +37,7 @@ public class EBookController {
     public EBookController(EBookService ebookService) {
         this.ebookService = ebookService;
     }
-
+    
     /**
      * Creates a new eBook by calling the createEBook method in the EBookService class and returns a ResponseEntity with the created EBook or an error message.
      * @param title
@@ -57,38 +60,37 @@ public class EBookController {
             return ApiResponse.fail("This eBook already exists");
         }
     }
-
+    
     /**
      * Updates an Ebook by calling the updateEBook method from our service class.
      * @param ebookId to be updated
      * @param updatedEbook what the eBook will be updated to.
-     * @return a ResponseEntity with the updated EBook or an error message if failure.
+     * @return a ApiResponse with the updated EBook or an error message if failure.
      */
     @PatchMapping("/{ebookId}")
-    public ResponseEntity<?> updateEBook(@PathVariable UUID ebookId, @RequestBody EBook updatedEbook) {
+    public ApiResponse<?> updateEBook(@PathVariable UUID ebookId, @RequestBody EBook updatedEbook) {
         try {
             EBook finalEBook = ebookService.updateEBook(ebookId, updatedEbook);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(finalEBook);
-        }
-        catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ApiResponse.success(finalEBook);
+        } catch (EntityNotFoundException e) {
+            return ApiResponse.error(404, "This ebook does not exist");
         }
     }
-
+    
     /**
      * Deletes an EBook from our database. Error message printed if EBook doesn't exist.
      * @param ebookId of the EBook to be deleted
-     * @return a ResponseEntity confirming the EBook is deleted or error message.
+     * @return a APIResponse confirming the EBook is deleted or error message.
      */
     @DeleteMapping("/{ebookId}")
-    public ResponseEntity<?> deleteEBookById(@PathVariable UUID ebookId) {
+    public ApiResponse<?> deleteEBookById(@PathVariable UUID ebookId) {
         Optional<EBook> optionalEBook = ebookService.findEBookById(ebookId);
         if (optionalEBook.isPresent()) {
             EBook ebookToDelete = optionalEBook.get();
             ebookService.deleteEBookByTitleAndAuthor(ebookToDelete);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Ebook successfully deleted from our EBookStore");
+            return ApiResponse.success("Ebook deleted sucessfully");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("EBook with ID " + ebookId + " doesn't exist in our EBookStore.");
+            return ApiResponse.error(404, "This ebook does not exist");
         }
     }
     
@@ -144,18 +146,18 @@ public class EBookController {
     /**
      * Identifies Ebook by matching a specified category in our database. Error message printed if not.
      * @param category of the eBooks we are looking for
-     * @return a ResponseEntity confirming the Ebooks exist or error message.
+     * @return a ApiResponse confirming the Ebooks exist or error message.
      */
     @GetMapping("/category/{category}")
-    public ResponseEntity<?> getEBooksByCategory(@PathVariable String category) {
+    public ApiResponse<List<EBook>> getEBooksByCategory(@PathVariable String category) {
         List<EBook> ebooks = ebookService.findEBookByCategory(category);
         if (!ebooks.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(ebooks);
+            return ApiResponse.success(ebooks);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No EBooks in this category exist.");
+            return ApiResponse.error(404, "No EBooks by this Author exist.");
         }
     }
-
+    
     /**
      * Identifies Ebooks in a specified price range in our database. Error message printed if not.
      * @param minPrice the eBooks we are looking for
@@ -163,12 +165,12 @@ public class EBookController {
      * @return a ResponseEntity confirming the Ebooks exist or error message.
      */
     @GetMapping("/price/{minPrice}/{maxPrice}")
-    public ResponseEntity<?> getEBooksByPriceInbetween(@PathVariable double minPrice, @PathVariable double maxPrice) {
+    public ApiResponse<List<EBook>> getEBooksByPriceInbetween(@PathVariable double minPrice, @PathVariable double maxPrice) {
         List<EBook> ebooks = ebookService.findEBookByPriceBetween(minPrice, maxPrice);
         if (!ebooks.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(ebooks);
+            return ApiResponse.success(ebooks);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No EBooks in this price range exist.");
+            return ApiResponse.error(404, "No EBooks by this Author exist.");
         }
     }
     

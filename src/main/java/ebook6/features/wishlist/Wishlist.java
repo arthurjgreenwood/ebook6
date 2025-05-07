@@ -10,6 +10,7 @@ import ebook6.ebook.EBook;
 import ebook6.user.User;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
