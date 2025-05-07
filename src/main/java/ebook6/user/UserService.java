@@ -1,20 +1,24 @@
 /**
  * Service Class for user-related operations.
  *
- * @authors Fedrico Leal Quintero and Thomas Hague
+ * @authors Fedrico Leal Quintero, Thomas Hague and Arthur Greenwood
  * Created by Fedrico Leal Quintero, 27/3/2025 with UserService, createUser and invalidPassword methods
  * Modified by Thomas Hague, 31/3/2025. New package, annotations, methods (findUserByEmail, findUserById, findByNAmeIgnoreCase
  * findAllUsers, updateUser, deleteUser, makeAdmin) and comments added. InvalidPassword and createUser methods edited.
  * Modified by Thomas Hague, 4/4/2025. loginUser added.
+ * Modified by Thomas Hague, 6/5/2025. createUser method edited.
+ * Modified by Arthur Greenwood, 6/5/2025. Created topUpBalance method
  */
 package ebook6.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -22,14 +26,16 @@ import java.util.regex.Pattern;
 public class UserService {
 
     private final UserRepository userRepository;
-
+    private final LocalContainerEntityManagerFactoryBean entityManagerFactory2;
+    
     /**
      * Creates userService using our userRepository
      * @param userRepository
      */
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, LocalContainerEntityManagerFactoryBean entityManagerFactory2) {
         this.userRepository = userRepository;
+        this.entityManagerFactory2 = entityManagerFactory2;
     }
 
     /**
@@ -72,10 +78,12 @@ public class UserService {
      * Checks if the email already exists in the database (case insensitive) and validates the password using a regular
      * expression, exceptions thrown if errors
      *
-     * @param user the user to create
+     * @param email to login
+     * @param password users password
      * @return the created user
      */
-    public User createUser(User user) throws RuntimeException {
+    public User createUser(String email, String password) throws RuntimeException {
+        User user = new User(email, password);
         // Check if email already exists
         if (userRepository.findByEmailIgnoreCase(user.getEmail()).isPresent()) {
             throw new UserAlreadyInDatabaseException("User with email: " + user.getEmail() + " already exists");
@@ -86,7 +94,9 @@ public class UserService {
                     "and be a minimum of 8 characters");
         }
         System.out.println("User: " + user + " has been added to our website");
+        user.setUserId(UUID.randomUUID()); //The value isn't randomly generating at construction for some reason
         return userRepository.save(user);
+        
     }
 
     /**
@@ -176,8 +186,24 @@ public class UserService {
             }
         }
         else {
-            throw new EntityNotFoundException("User with email: " + email + " doesn't exist in our website");
+            throw new EntityNotFoundException("User with email: " + email + " doesn't exist in our database");
         }
+    }
+    
+    /**
+     * Method for topping up a user's balance by a specified amount
+     * @param userID a userId
+     * @param amount the amount of money being added to the user's account
+     * @throws EntityNotFoundException if the user is not present in the database
+     */
+    public void topUpBalance(UUID userID, double amount) {
+        Optional<User> optionalUser = userRepository.findByUserId(userID);
+        if (optionalUser.isEmpty()){
+            throw new EntityNotFoundException("User with id: " + userID + " doesn't exist in our database");
+        }
+        User user = optionalUser.get();
+        user.setBalance(user.getBalance() + amount); //Updates the balance in the user entity
+        userRepository.save(user);
     }
 
 

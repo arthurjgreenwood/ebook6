@@ -1,30 +1,36 @@
 /**
  * Controller Class for user-related REST API endpoints.
  *
- * @authors Fedrico Leal Quintero and Thomas Hague
+ * @authors Fedrico Leal Quintero, Thomas Hague and Arthur Greenwood
  * Created by Fedrico Leal Quintero, 27/3/2025 with UserController and createUser methods
  * Modified by Thomas Hague 31/3/2025. Package and comments added. Methods updateUser, promoteUserToAdmin, deleteUserByEmail,
  * deleteUserByID, getUserByEmail, getUserByID and getAllUsers developed. Method createUser edited now with custom exceptions.
  * Modified by Thomas Hague, 4/4/2025. loginUser added.
+ * Modified by Arthur Greenwood, 6/5/2025. Created topUpBalance, refactored all methods to return ApiResponses
+ * Modified by Thomas Hague, 6/5/2025. createUser method edited.
+ * Modified by Arthur Greenwood, 7/5/2025. Refactored loginUser
  */
 
 // getUserMethods??!!
-
+//todo
 package ebook6.user;
 
+import ebook6.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
@@ -40,20 +46,38 @@ public class UserController {
 
     /**
      * Creates a new user by calling the createUser method from our service class.
-     * @param user the user to create
+     * @param reg
      * @return a ResponseEntity with the created user or an error message
      */
-    @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User user) {
+    @PostMapping("/register")
+    @Transactional
+    public ApiResponse<?> createUser(@RequestBody RegisterRequest reg) {
         try {
-            User createdUser = userService.createUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+            User createdUser = userService.createUser(reg.getEmail(), reg.getPassword());
+            return ApiResponse.success(createdUser);
         } catch (UserAlreadyInDatabaseException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ApiResponse.fail(e.getMessage());
         } catch (InvalidPasswordException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ApiResponse.fail("Invalid password");
         }
     }
+    
+    
+    @PostMapping("/topup")
+    @Transactional
+    public ApiResponse<?> topUpBalance(@RequestParam UUID userID, @RequestParam double amount) {
+        try {
+            Optional<User> user = userService.findUserByUserId(userID);
+            if (user.isEmpty()) {
+                return ApiResponse.error(404, "User not found");
+            }
+            userService.topUpBalance(userID, amount);
+            return ApiResponse.success(String.format("Successfully added %.2f GBP", amount));
+        } catch (UserNotLoggedInException e) {
+            return ApiResponse.fail("User not logged in");
+        }
+    }
+    
 
     /**
      * Updates a user by calling the updateUser method from our service class.
@@ -62,13 +86,14 @@ public class UserController {
      * @return a ResponseEntity with the updated User or an error message
      */
     @PatchMapping("/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable UUID userId, @RequestBody User updatedUser) {
+    @Transactional
+    public ApiResponse<?> updateUser(@PathVariable UUID userId, @RequestBody User updatedUser) {
         try {
             User finalUser = userService.updateUser(userId, updatedUser);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(finalUser);
+            return ApiResponse.success(finalUser);
         }
         catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ApiResponse.error(404, "User not found");
         }
     }
 
@@ -82,7 +107,8 @@ public class UserController {
      * @return a ResponseEntity with the promoted User or an error message
      */
     @PatchMapping("/adminPromotion")
-    public ResponseEntity<String> promoteUserToAdmin (@RequestParam UUID currentAdminId, @RequestParam UUID newAdminId) {
+    @Transactional
+    public ApiResponse<String> promoteUserToAdmin (@RequestParam UUID currentAdminId, @RequestParam UUID newAdminId) {
         Optional<User> optionalCurrentAdmin = userService.findUserByUserId(currentAdminId);
         Optional<User> optionalNewAdmin = userService.findUserByUserId(newAdminId);
         if (optionalCurrentAdmin.isPresent() && optionalNewAdmin.isPresent()) {
@@ -90,13 +116,13 @@ public class UserController {
             User newAdmin = optionalNewAdmin.get();
             try {
                 userService.makeAdmin(currentAdmin, newAdmin);
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User promoted to admin");
+                return ApiResponse.success("User successfully promoted");
             } catch (InvalidAccessException e) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+                return ApiResponse.fail("Invalid access");
             }
         }
         else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User(s) don't exist in our website.");
+            return ApiResponse.error(404, "User not found");
         }
     }
 
@@ -107,14 +133,15 @@ public class UserController {
      * @return a ResponseEntity confirming the user is deleted or error message.
      */
     @DeleteMapping("/{email}")
-    public ResponseEntity<?> deleteUserByEmail(@PathVariable String email) {
+    @Transactional
+    public ApiResponse<?> deleteUserByEmail(@PathVariable String email) {
         Optional<User> optionalUser = userService.findUserByEmail(email);
         if (optionalUser.isPresent()) {
             User userToDelete = optionalUser.get();
             userService.deleteUser(userToDelete);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted");
+            return ApiResponse.success("User deleted successfully");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+            return ApiResponse.error(404, "User not found");
         }
     }
 
@@ -125,14 +152,15 @@ public class UserController {
      * @return a ResponseEntity confirming the user is deleted or error message.
      */
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUserById(@PathVariable UUID userId) {
+    @Transactional
+    public ApiResponse<?> deleteUserById(@PathVariable UUID userId) {
         Optional<User> optionalUser = userService.findUserByUserId(userId);
         if (optionalUser.isPresent()) {
             User userToDelete = optionalUser.get();
             userService.deleteUser(userToDelete);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted");
+            return ApiResponse.success("User deleted successfully");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+            return ApiResponse.error(404, "User not found");
         }
     }
 
@@ -142,12 +170,12 @@ public class UserController {
      * @return a ResponseEntity with the user or error message.
      */
     @GetMapping("/email/{email}")
-    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
+    public ApiResponse<?> getUserByEmail(@PathVariable String email) {
         Optional<User> optionalUser = userService.findUserByEmail(email);
         if (optionalUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(optionalUser.get());
+            return ApiResponse.success(optionalUser.get());
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+            return ApiResponse.error(404, "User not found");
         }
     }
 
@@ -157,12 +185,12 @@ public class UserController {
      * @return a ResponseEntity with the user or error message.
      */
     @GetMapping("/id/{userId}")
-    public ResponseEntity<?> getUserById(@PathVariable UUID userId) {
+    public ApiResponse<?> getUserById(@PathVariable UUID userId) {
         Optional<User> optionalUser = userService.findUserByUserId(userId);
         if (optionalUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(optionalUser.get());
+            return ApiResponse.success(optionalUser.get());
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+            return ApiResponse.error(404, "User not found");
         }
     }
 
@@ -172,12 +200,12 @@ public class UserController {
      * @return a ResponseEntity with matching users or error message.
      */
     @GetMapping("/name/{name}")
-    public ResponseEntity<List<User>> getUsersByName(@PathVariable String name) {
+    public ApiResponse<List<User>> getUsersByName(@PathVariable String name) {
         List<User> users = userService.findByNameIgnoreCase(name);
         if (!users.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(users);
+            return ApiResponse.success(users);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(users);
+            return ApiResponse.error(404, "User(s) not found");
         }
     }
 
@@ -186,32 +214,32 @@ public class UserController {
      * @return a ResponseEntity with all users or error message.
      */
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ApiResponse<List<User>> getAllUsers() {
         List<User> users = userService.findAllUsers();
         if (!users.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(users);
+            return ApiResponse.success(users);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(users);
+            return ApiResponse.error(404, "No users found");
         }
     }
 
     /**
      * Logs a user into our EBookStore. Error message printed if unsuccessful.
-     * @param email users email
-     * @param password users password
-     * @return a ResponseEntity confirmed the user is logged in or error message.
+     * @param payload a Map containing the users email and password
+     * @return ApiResponse containing user ID or an error.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody String email, @RequestParam String password) {
+    @Transactional
+    public ApiResponse<?> loginUser(@RequestBody Map<String, String> payload) {
         try {
-            userService.loginUser(email, password);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User logged in");
+            userService.loginUser(payload.get("email"), payload.get("password"));
+            return ApiResponse.success(userService.findUserByEmail(payload.get("email")));
          }
         catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ApiResponse.error(404, "User not found");
         }
         catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ApiResponse.fail("Invalid email or password");
         }
     }
 

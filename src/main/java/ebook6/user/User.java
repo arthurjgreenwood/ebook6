@@ -4,15 +4,15 @@
  * Created by Fedrico Leal Quintero, 27/3/2025 with fields, no parameter constructor, getters and setters
  * Modified by Thomas Hague, 31/3/2025. Package, annotations, fields, getters, setters, methods (constructor with parameters,
  * toString, equals, hashCode) and comments added.
+ * Modified by Arthur Greenwood, 6/5/2025. Replaced @Size with @Max for maxLoaned, added @GeneratedValue for ID, narrowed down constructor
+ *  parameters to email and username to match the front end request parameters
  */
 
 package ebook6.user;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.UUID;
@@ -22,6 +22,7 @@ import java.util.UUID;
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID userId;
     @Column(nullable = false)
     private String name;
@@ -36,9 +37,10 @@ public class User {
     @Column(nullable = false)
     private String address;
     private boolean loggedIn;
+    private String jwtToken;
     private boolean admin;
     @Column(nullable = false)
-    @Size(max = 10)
+    @Max(10)
     private int totalLoaned;
     private static final int maxLoans = 10;
 
@@ -46,20 +48,21 @@ public class User {
      * Constructors for creating Users. Includes a no parameter constructor for the JPA and normal parameterised constructor.
      */
     public User() {
-        this.userId = UUID.randomUUID();
+        //this.userId = UUID.randomUUID();
         this.balance = 0.0;
     }
 
-    public User(String name, String email, String password, String address) {
-        this.userId = UUID.randomUUID();
-        this.name = name;
+    public User(String email, String password) {
+        //this.userId = UUID.randomUUID();
+        this.name = "Anonymous";
         this.email = email;
         this.password = password;
-        this.address = address;
+        this.address = "No Address";
         this.balance = 0.0;
         this.admin = false;
         this.loggedIn = false;
         this.totalLoaned = 0;
+        //Most are assigned default values to allow easy registration, can be changed later in the users profile page
     }
 
     // Getters and setters

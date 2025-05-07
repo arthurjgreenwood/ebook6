@@ -8,7 +8,7 @@
     <!-- Group ID: a unique identifier for the project's organization -->
     <groupId>com.example</groupId>
     <!-- Artifact ID: a unique identifier for the project's artifact (e.g., JAR file) -->
-    <artifactId>ebook</artifactId>
+    <artifactId>ebook6</artifactId>
     <!-- Version: the project's version number -->
     <version>1.0</version>
     <!-- Packaging: specifies the type of packaging for the project's artifact (e.g., JAR, WAR, EAR) -->
@@ -62,6 +62,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

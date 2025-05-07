@@ -8,6 +8,7 @@
 
 package ebook6.ebook;
 
+import ebook6.ApiResponse;
 import ebook6.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,17 +37,24 @@ public class EBookController {
 
     /**
      * Creates a new eBook by calling the createEBook method in the EBookService class and returns a ResponseEntity with the created EBook or an error message.
-     * @param ebook the EBook to create
+     * @param title
+     * @param author
+     * @param quantityAvailable for loaning
+     * @param category
+     * @param price to loan
+     * @param maxLoanDuration the eBook can be loaned for
+     * @param description
      * @return a ResponseEntity with the created EBook or an error message
      */
-    @PostMapping
-    public ResponseEntity<?> createEBook(@RequestBody EBook ebook) {
+    @PostMapping("/add")
+    public ApiResponse<?> createEBook(@PathVariable String title, @PathVariable String author, @PathVariable int quantityAvailable,
+                                      @PathVariable String category, @PathVariable double price, @PathVariable String description,
+                                      @PathVariable int maxLoanDuration) {
         try {
-            EBook createdEBook = ebookService.createEBook(ebook);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdEBook);
-        }
-        catch (EbookAlreadyInDatabaseException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            EBook createdEBook = ebookService.createEBook(title, author, quantityAvailable, category, price, maxLoanDuration, description);
+            return ApiResponse.success("Successfully created ebook");
+        } catch (EbookAlreadyInDatabaseException e) {
+            return ApiResponse.fail("This eBook already exists");
         }
     }
 
@@ -83,37 +91,56 @@ public class EBookController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("EBook with ID " + ebookId + " doesn't exist in our EBookStore.");
         }
     }
-
+    
+    /**
+     * Searches for EBooks by title and then by author.
+     *
+     * @param searchText The search query.
+     * @return An ApiResponse containing the search results or an error message.
+     */
+    @GetMapping("/search/{searchText}")
+    public ApiResponse<List<EBook>> searchEbooks(@PathVariable String searchText) {
+        ApiResponse<List<EBook>> response = getEBooksByTitle(searchText);
+        if (response.getCode() == 200) {
+            return response;
+        }
+        
+        return getEBooksByAuthor(searchText);
+    }
+    
     /**
      * Identifies an Ebook by matching their title to ones in our database. Error message printed if not.
+     *
      * @param title of the eBook we are looking for
-     * @return a ResponseEntity confirming the Ebook exists or error message.
+     * @return An ApiResponse confirming the Ebook exists or error message.
      */
     @GetMapping("/title/{title}")
-    public ResponseEntity<?> getEBooksByTitle(@PathVariable String title) {
+    public ApiResponse<List<EBook>> getEBooksByTitle(@PathVariable String title) {
         List<EBook> ebooks = ebookService.findEBookByTitle(title);
         if (!ebooks.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(ebooks);
+            return ApiResponse.success(ebooks);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No EBooks matching title exist.");
+            return ApiResponse.error(404, "No EBooks matching title exist.");
         }
     }
-
+    
     /**
      * Identifies an Ebook by matching their author to ones in our database. Error message printed if not.
+     *
      * @param author of the eBook we are looking for
-     * @return a ResponseEntity confirming the Ebook exists or error message.
+     * @return An ApiResponse confirming the Ebook exists or error message.
      */
     @GetMapping("/author/{author}")
-    public ResponseEntity<?> getEBooksByAuthor(@PathVariable String author) {
+    public ApiResponse<List<EBook>> getEBooksByAuthor(@PathVariable String author) {
         List<EBook> ebooks = ebookService.findEBookByAuthor(author);
         if (!ebooks.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(ebooks);
+            return ApiResponse.success(ebooks);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No EBooks by this Author exist.");
+            return ApiResponse.error(404, "No EBooks by this Author exist.");
         }
     }
-
+    
+    
     /**
      * Identifies Ebook by matching a specified category in our database. Error message printed if not.
      * @param category of the eBooks we are looking for
@@ -144,9 +171,22 @@ public class EBookController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No EBooks in this price range exist.");
         }
     }
-
-
-
-
-
+    
+    /**
+     * Gets the top 5 recommended books for a user.
+     *
+     * @param userId The ID of the user.
+     * @return An ApiResponse containing the list of recommended books.
+     */
+    @GetMapping("/recommend")
+    public ApiResponse<List<EBook>> getRecommendations(@RequestParam("userId") Long userId) {
+        List<EBook> ebooks = ebookService.getRecommendedEbooks(userId);
+        if (!ebooks.isEmpty()) {
+            return ApiResponse.success(ebooks);
+        } else {
+            return ApiResponse.error(404, "No recommended ebooks found.");
+        }
+    }
+    
+    
 }
