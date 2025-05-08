@@ -4,6 +4,7 @@
  * Created by Thomas Hague, 31/3/2025 with package, comments, annotations and EbookService, findEBookById, findEBookByTitle,
  * findEBookByAuthor,findEBookByPriceInbetween, findEBookByRating, findEBookByMaxPrice, findAll, createEBook, deleteEBook and UpdateEBook methods.
  * Modified by Thomas Hague, 6/5/2025. createEbook method edited.
+ * Modified by Arthur Greenwood, 8/5/2025. Refactored getRecommendedEbooks
  */
 
 package ebook6.ebook;
@@ -12,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class EBookService {
@@ -164,16 +162,14 @@ public class EBookService {
     }
     
     /**
-     * Gets the top 4 recommended books for a user.
+     * Gets the top 4 recommended books.
      * For now just top 4 books sorted ascending. Future implementation to get recommended books through historical loans
-     * @param userId The ID of the user.
      * @return A list of recommended ebooks.
      
      */
-    public List<EBook> getRecommendedEbooks(Long userId) {
-        // Get the first 5 ebooks sorted ascending by title
+    public List<EBook> getRecommendedEbooks() {
         List<EBook> ebooks = eBookRepository.findAll();
-        ebooks.sort(Comparator.comparing(EBook::getTitle));
+        Collections.shuffle(ebooks);
         return ebooks.subList(0, Math.min(4, ebooks.size()));
     }
 }

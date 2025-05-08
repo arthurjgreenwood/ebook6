@@ -7,6 +7,7 @@
  * getEbooksByPriceInBetween methods.
  * Modified by Thomas Hague, 6/5/2025. createEbook method edited.
  * Modified by Thomas Hague, 6/5/2025. deleteEbook, updateEbook, getEbooksByCategory, getEBooksByPriceInbetween methods edited.
+ * Modified by Arthur Greenwood, 8/5/2025. Refactored getRecommended()
  */
 
 package ebook6.ebook;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -82,7 +84,7 @@ public class EBookController {
      * @param ebookId of the EBook to be deleted
      * @return a APIResponse confirming the EBook is deleted or error message.
      */
-    @DeleteMapping("/{ebookId}")
+    @DeleteMapping("/ebook/{ebookId}")
     public ApiResponse<?> deleteEBookById(@PathVariable UUID ebookId) {
         Optional<EBook> optionalEBook = ebookService.findEBookById(ebookId);
         if (optionalEBook.isPresent()) {
@@ -176,18 +178,26 @@ public class EBookController {
     
     /**
      * Gets the top 4 recommended books for a user.
-     *
-     * @param userId The ID of the user.
      * @return An ApiResponse containing the list of recommended books.
      */
     @GetMapping("/books")
-    public ApiResponse<List<EBook>> getRecommendations(@RequestParam("userId") Long userId) {
-        List<EBook> ebooks = ebookService.getRecommendedEbooks(userId);
-        if (!ebooks.isEmpty()) {
-            return ApiResponse.success(ebooks);
-        } else {
-            return ApiResponse.error(404, "No recommended ebooks found.");
+    public ApiResponse<?> getRecommendations() {
+        return ApiResponse.success(ebookService.getRecommendedEbooks());
+    }
+    
+    
+    /**
+     * Finds an eBook matching specified ID
+     * @return
+     */
+    @GetMapping("/ebook/{id}")
+    public ApiResponse<EBook> getEBookById(@PathVariable UUID id) {
+        Optional<EBook> ebook = ebookService.findEBookById(id);
+        if (ebook.isPresent()) {
+            return ApiResponse.success(ebook.get());
         }
+        return ApiResponse.error(404, "No EBook found with this id");
+        
     }
     
     

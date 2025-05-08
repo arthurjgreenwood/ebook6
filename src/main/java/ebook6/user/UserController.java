@@ -8,7 +8,7 @@
  * Modified by Thomas Hague, 4/4/2025. loginUser added.
  * Modified by Arthur Greenwood, 6/5/2025. Created topUpBalance, refactored all methods to return ApiResponses
  * Modified by Thomas Hague, 6/5/2025. createUser method edited.
- * Modified by Arthur Greenwood, 7/5/2025. Refactored loginUser
+ * Modified by Arthur Greenwood, 7/5/2025. Rewritten loginUser
  */
 
 // getUserMethods??!!
@@ -30,12 +30,13 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 public class UserController {
-
+    
     private final UserService userService;
     private final UserRepository userRepository;
     
     /**
      * Creates an UserController using our ebookService
+     *
      * @param userService
      */
     @Autowired
@@ -43,9 +44,10 @@ public class UserController {
         this.userService = userService;
         this.userRepository = userRepository;
     }
-
+    
     /**
      * Creates a new user by calling the createUser method from our service class.
+     *
      * @param reg
      * @return a ResponseEntity with the created user or an error message
      */
@@ -78,10 +80,11 @@ public class UserController {
         }
     }
     
-
+    
     /**
      * Updates a user by calling the updateUser method from our service class.
-     * @param userId to be updated
+     *
+     * @param userId      to be updated
      * @param updatedUser what the user will be updated to.
      * @return a ResponseEntity with the updated User or an error message
      */
@@ -91,24 +94,24 @@ public class UserController {
         try {
             User finalUser = userService.updateUser(userId, updatedUser);
             return ApiResponse.success(finalUser);
-        }
-        catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return ApiResponse.error(404, "User not found");
         }
     }
-
+    
     /**
      * Promotes a normal user to have admin privileges. Errors if admin or user to promote isn't found in our database,
      * or the user authorising the promotion doesn't have admin privileges.
      * Calls our service class to identify the relevant users by their userId's, and then if both users exist, calls the
      * makeAdmin method in our service class.
+     *
      * @param currentAdminId the admin authorising the promotion
-     * @param newAdminId user to be promoted
+     * @param newAdminId     user to be promoted
      * @return a ResponseEntity with the promoted User or an error message
      */
     @PatchMapping("/adminPromotion")
     @Transactional
-    public ApiResponse<String> promoteUserToAdmin (@RequestParam UUID currentAdminId, @RequestParam UUID newAdminId) {
+    public ApiResponse<String> promoteUserToAdmin(@RequestParam UUID currentAdminId, @RequestParam UUID newAdminId) {
         Optional<User> optionalCurrentAdmin = userService.findUserByUserId(currentAdminId);
         Optional<User> optionalNewAdmin = userService.findUserByUserId(newAdminId);
         if (optionalCurrentAdmin.isPresent() && optionalNewAdmin.isPresent()) {
@@ -120,15 +123,15 @@ public class UserController {
             } catch (InvalidAccessException e) {
                 return ApiResponse.fail("Invalid access");
             }
-        }
-        else {
+        } else {
             return ApiResponse.error(404, "User not found");
         }
     }
-
+    
     /**
      * Deletes a user from our database by calling the delete user message from our service class.
      * Checks if the user's email address matches one in our database. Error message if not.
+     *
      * @param email of the user to be deleted
      * @return a ResponseEntity confirming the user is deleted or error message.
      */
@@ -144,10 +147,11 @@ public class UserController {
             return ApiResponse.error(404, "User not found");
         }
     }
-
+    
     /**
      * Deletes a user from our database by calling the delete user message from our service class.
      * Checks if the user's Id matches one in our database. Error message if not.
+     *
      * @param userId of the user to be deleted
      * @return a ResponseEntity confirming the user is deleted or error message.
      */
@@ -163,9 +167,10 @@ public class UserController {
             return ApiResponse.error(404, "User not found");
         }
     }
-
+    
     /**
      * Identifies a user by matching their email address to one in our database. Error message printed if not.
+     *
      * @param email of the user we are looking for
      * @return a ResponseEntity with the user or error message.
      */
@@ -178,9 +183,10 @@ public class UserController {
             return ApiResponse.error(404, "User not found");
         }
     }
-
+    
     /**
      * Identifies a user by matching their userId to one in our database. Error message printed if not.
+     *
      * @param userId of the user we are looking for
      * @return a ResponseEntity with the user or error message.
      */
@@ -193,9 +199,10 @@ public class UserController {
             return ApiResponse.error(404, "User not found");
         }
     }
-
+    
     /**
      * Identifies a user by matching their name to one in our database. Error message printed if not.
+     *
      * @param name of the user we are looking for
      * @return a ResponseEntity with matching users or error message.
      */
@@ -208,9 +215,10 @@ public class UserController {
             return ApiResponse.error(404, "User(s) not found");
         }
     }
-
+    
     /**
      * Identifies all users in our database. Error message printed if none
+     *
      * @return a ResponseEntity with all users or error message.
      */
     @GetMapping
@@ -222,31 +230,31 @@ public class UserController {
             return ApiResponse.error(404, "No users found");
         }
     }
-
+    
     /**
      * Logs a user into our EBookStore. Error message printed if unsuccessful.
+     *
      * @param payload a Map containing the users email and password
-     * @return ApiResponse containing user ID or an error.
+     * @return ApiResponse containing a new field userId or an error.
      */
     @PostMapping("/login")
     @Transactional
-    public Object loginUser(@RequestBody Map<String, String> payload) {
+    public ApiResponse<Map<String, Object>> loginUser(@RequestBody Map<String, String> payload) {
         try {
-            
-            return userService.loginUser(payload.get("email"), payload.get("password"))
-                    .map(user -> Map.of(
-                            "message", "Login successful",
-                            "userId", user.getUserId()
-                    ))
-                    .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-            
-         } //userService.findUserByEmail(payload.get("email"))
+            Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(payload.get("email"));
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "Login successful");
+                response.put("user", user.getUserId()); // Adds a new JSON field to the response for the frontend
+                return ApiResponse.success(response);
+            }
+        }
         catch (EntityNotFoundException e) {
             return ApiResponse.error(404, "User not found");
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ApiResponse.fail("Invalid email or password");
         }
+        return ApiResponse.error(404, "User not found");
     }
-
 }
