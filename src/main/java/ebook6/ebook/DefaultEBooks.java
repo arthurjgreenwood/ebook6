@@ -5,8 +5,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.util.List;
-    
-    @Configuration
+
+/**
+ * Class that automatically adds 10 eBooks to the database when the system is run
+ *
+ * @author Arthur Greenwood
+ * Created by Arthur Greenwood, 7/05/2025 with seedEbooks
+ */
+
+@Configuration
     public class DefaultEBooks {
         
         @Bean

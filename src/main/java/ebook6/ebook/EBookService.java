@@ -1,6 +1,6 @@
 /**
  * Service Class for eBook-related operations.
- * @authors Thomas Hague
+ * @authors Thomas Hague and Arthur Greenwood
  * Created by Thomas Hague, 31/3/2025 with package, comments, annotations and EbookService, findEBookById, findEBookByTitle,
  * findEBookByAuthor,findEBookByPriceInbetween, findEBookByRating, findEBookByMaxPrice, findAll, createEBook, deleteEBook and UpdateEBook methods.
  * Modified by Thomas Hague, 6/5/2025. createEbook method edited.
@@ -170,6 +170,10 @@ public class EBookService {
     public List<EBook> getRecommendedEbooks() {
         List<EBook> ebooks = eBookRepository.findAll();
         Collections.shuffle(ebooks);
+        for (EBook ebook : ebooks) {
+            System.out.println(ebook);
+            System.out.println(ebook.getEBookId()); //TODO remove this when its done
+        }
         return ebooks.subList(0, Math.min(4, ebooks.size()));
     }
 }

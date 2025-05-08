@@ -1,8 +1,10 @@
 /**
  * Controller Class for loan-related REST API endpoints.
  *
- * @authors Thomas Hague
+ * @authors Thomas Hague and Arthur Greenwood
  * Created by Thomas Hague, 2/4/2025 with package, annotations, LoanController, createLoan and loanEnding methods
+ * Modified by Arthur Greenwood 8/5/2025. Refactored createLoan
+ * Modified by Thomas Hague 8/5/2025. added listLoans, refactored loanEnding.
  */
 
 package ebook6.loan;
@@ -21,7 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/loans")
+@RequestMapping("/api/loan")
 public class LoanController {
     private final LoanService loanService;
 
@@ -42,7 +44,7 @@ public class LoanController {
      * @param ebookId the ebook to be loaned
      * @return a ResponseEntity with the created loan or an error message
      */
-    @PostMapping
+    @PostMapping("/rent")
     @Transactional
     public ApiResponse<?> createLoan(@RequestParam UUID userId, @RequestParam UUID ebookId) {
         try {

@@ -75,7 +75,7 @@ public class ReviewController {
     }
 
     /**
-     * Deletes a review from our database by calling the deleteReview message from our service class.
+     * Deletes a review from our database by calling the deleteReview method from our service class.
      * Checks if the reviewId matches one in our database. Error message if not.
      * @param reviewId of the review to be deleted
      * @return a ResponseEntity confirming the review is deleted or error message.

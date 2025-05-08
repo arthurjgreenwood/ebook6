@@ -20,10 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -190,15 +187,23 @@ public class EBookController {
      * Finds an eBook matching specified ID
      * @return
      */
-    @GetMapping("/ebook/{id}")
-    public ApiResponse<EBook> getEBookById(@PathVariable UUID id) {
-        Optional<EBook> ebook = ebookService.findEBookById(id);
+    @GetMapping("/ebook/{bookId}")
+    public ApiResponse<Map<String, Object>> getEBookById(@PathVariable UUID bookId) {
+        System.out.println("bookId: " + bookId); //TODO remove when testing is complete
+        Map<String, Object> map = new HashMap<>();
+        Optional<EBook> ebook = ebookService.findEBookById(bookId);
         if (ebook.isPresent()) {
-            return ApiResponse.success(ebook.get());
+            EBookResponse response = new EBookResponse(ebook.get());
+            map.put("code", 200);
+            map.put("message", "Success");
+            map.put("data", response);
+            return ApiResponse.success(map);
+        } else {
+            map.put("code", 404);
+            map.put("message", "EBook not found");
+            map.put("data", null);
+            return ApiResponse.fail("Could not find EBook");
         }
-        return ApiResponse.error(404, "No EBook found with this id");
-        
     }
-    
     
 }

@@ -3,12 +3,12 @@
  *
  * @author Thomas Hague
  * Created by Thomas Hague, 31/3/2025 with package, fields, constructors, getters, setters, toString, equals and hashCode methods.
+ * Modified by Arthur Greenwood, 8/5/2025. Made ebookId CHAR(36)
  */
 
 package ebook6.ebook;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
@@ -45,6 +45,7 @@ public class EBook {
 
     public EBook(String title, String author, int quantityAvailable, String category, double price, int maxLoanDuration, String description) {
         this.ebookId = UUID.randomUUID();
+        System.out.println(this.ebookId); //TODO remove this when solved
         this.title = title;
         this.author = author;
         this.quantityAvailable = quantityAvailable;
@@ -59,6 +60,13 @@ public class EBook {
 
     public UUID getEBookId() {
         return ebookId;
+    }
+    
+    /**
+     * This is only here for testing purposes and not to be used in the actual API
+     */
+    public void setEBookId(UUID ebookId) {
+        this.ebookId = ebookId;
     }
 
     public String getTitle() {
@@ -132,7 +140,7 @@ public class EBook {
     public void setCoverURL(String coverURL) {
         this.coverURL = coverURL;
     }
-
+    
     /**
      * Overrides toString to display books by Title and Author.
      * @return string representation of EBooks
@@ -169,7 +177,5 @@ public class EBook {
         hc = hc * 37 + this.getTitle().hashCode();
         return hc * 19 + getAuthor().hashCode();
     }
-
-
 }
 
