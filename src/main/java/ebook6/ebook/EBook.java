@@ -3,7 +3,6 @@
  *
  * @author Thomas Hague
  * Created by Thomas Hague, 31/3/2025 with package, fields, constructors, getters, setters, toString, equals and hashCode methods.
- * Modified by Arthur Greenwood, 8/5/2025. Made ebookId CHAR(36)
  */
 
 package ebook6.ebook;
@@ -45,7 +44,6 @@ public class EBook {
 
     public EBook(String title, String author, int quantityAvailable, String category, double price, int maxLoanDuration, String description) {
         this.ebookId = UUID.randomUUID();
-        System.out.println(this.ebookId); //TODO remove this when solved
         this.title = title;
         this.author = author;
         this.quantityAvailable = quantityAvailable;
@@ -168,7 +166,7 @@ public class EBook {
     }
 
     /**
-     * Overrides hashCode so two EBookw will have the same hashCode if their title and author match.
+     * Overrides hashCode so two EBooks will have the same hashCode if their title and author match.
      * @return an int, the hashCode
      */
     @Override

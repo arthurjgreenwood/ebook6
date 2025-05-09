@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-//TODO refactor review structures to have a user and an ebook associated with it. This can be pulled from the loan object
 
 @RestController
 @RequestMapping("/api/review")

@@ -11,8 +11,6 @@
  * Modified by Arthur Greenwood, 7/5/2025. Rewritten loginUser
  */
 
-// getUserMethods??!!
-//todo
 package ebook6.user;
 
 import ebook6.ApiResponse;
@@ -48,7 +46,7 @@ public class UserController {
     /**
      * Creates a new user by calling the createUser method from our service class.
      *
-     * @param reg
+     * @param reg A Request body containing the email and password
      * @return a ResponseEntity with the created user or an error message
      */
     @PostMapping("/register")

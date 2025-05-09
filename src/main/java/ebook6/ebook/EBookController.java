@@ -5,9 +5,10 @@
  * Created by Thomas Hague, 31/3/2025 with Package, comments and EbookController and createEbook methods
  * Modified by Thomas Hague 2/4/2025. Added updateEBook, deleteEBookById, getEBooksByTitle, getEbooksByAuthor, getEbooksByCategory,
  * getEbooksByPriceInBetween methods.
+ * Modified by Federico Leal 6/5/2025. searchEbooks, getEBooksByTitle, getEBooksByAuthor methods edited
  * Modified by Thomas Hague, 6/5/2025. createEbook method edited.
  * Modified by Thomas Hague, 6/5/2025. deleteEbook, updateEbook, getEbooksByCategory, getEBooksByPriceInbetween methods edited.
- * Modified by Arthur Greenwood, 8/5/2025. Refactored getRecommended()
+ * Modified by Arthur Greenwood, 8/5/2025. Refactored getRecommended
  */
 
 package ebook6.ebook;
@@ -29,8 +30,8 @@ public class EBookController {
     private final EBookService ebookService;
     
     /**
-     * Creates an EBookController using our ebookService
-     * @param ebookService
+     * Creates an EBookController using ebookService
+     * @param ebookService instance of service class
      */
     @Autowired
     public EBookController(EBookService ebookService) {
@@ -39,22 +40,22 @@ public class EBookController {
     
     /**
      * Creates a new eBook by calling the createEBook method in the EBookService class and returns a ResponseEntity with the created EBook or an error message.
-     * @param title
-     * @param author
-     * @param quantityAvailable for loaning
-     * @param category
-     * @param price to loan
-     * @param maxLoanDuration the eBook can be loaned for
-     * @param description
+     * @param request ebook request object passed from frontend
      * @return a ResponseEntity with the created EBook or an error message
      */
     @PostMapping("/add")
-    public ApiResponse<?> createEBook(@PathVariable String title, @PathVariable String author, @PathVariable int quantityAvailable,
-                                      @PathVariable String category, @PathVariable double price, @PathVariable String description,
-                                      @PathVariable int maxLoanDuration) {
+    public ApiResponse<?> createEBook(@RequestBody EbookRequest request) {
         try {
-            EBook createdEBook = ebookService.createEBook(title, author, quantityAvailable, category, price, maxLoanDuration, description);
-            return ApiResponse.success("Successfully created ebook");
+            EBook createdEBook = ebookService.createEBook(
+                    request.getTitle(),
+                    request.getAuthor(),
+                    request.getQuantityAvailable(),
+                    request.getCategory(),
+                    request.getPrice(),
+                    request.getMaxLoanDuration(),
+                    request.getDescription()
+            );
+            return ApiResponse.success(createdEBook);
         } catch (EbookAlreadyInDatabaseException e) {
             return ApiResponse.fail("This eBook already exists");
         }
@@ -95,7 +96,6 @@ public class EBookController {
     
     /**
      * Searches for EBooks by title and then by author.
-     *
      * @param searchText The search query.
      * @return An ApiResponse containing the search results or an error message.
      */
@@ -185,11 +185,11 @@ public class EBookController {
     
     /**
      * Finds an eBook matching specified ID
-     * @return
+     * @return ApiResponse with http code and ebook UUID
      */
     @GetMapping("/ebook/{bookId}")
     public ApiResponse<Map<String, Object>> getEBookById(@PathVariable UUID bookId) {
-        System.out.println("bookId: " + bookId); //TODO remove when testing is complete
+        
         Map<String, Object> map = new HashMap<>();
         Optional<EBook> ebook = ebookService.findEBookById(bookId);
         if (ebook.isPresent()) {
